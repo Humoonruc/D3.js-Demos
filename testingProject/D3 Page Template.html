@@ -2,15 +2,27 @@
 <html lang="en">
 
 <head>
+    <!-- 设置标题，导入d3.js库 -->
     <meta charset="utf-8">
     <title>Data Visualization!</title>
     <script type="text/javascript" src="d3.js"></script>
 </head>
 
 <body>
+    <!-- 创建svg，设置修改svg的脚本（使用d3）。可视化方案只需要考虑对svg的改造即可。 -->
     <svg width="960" height="500" id="mainsvg" class="svgs"></svg>
-    <script type="text/javascript">
-            // Your beautiful D3 code will go here
+    <script type="text/javascript"> // Your beautiful D3 code will go here
+        let mainsvg = d3.select('.svgs'); // 选择svgs类
+
+        let maingroup = mainsvg
+            .append('g') // <g>，添加一个组
+            .attr('transform', `translate(${100}, ${100})`); // 平移100个像素
+
+        let circle = maingroup
+            .append('circle') //一行一个动作，就像R里的%>%
+            .attr('stroke', 'black')
+            .attr('r', '66')
+            .attr('fill', 'yellow');
     </script>
 </body>
 
