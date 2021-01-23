@@ -11,6 +11,7 @@
   <svg width="1000" height="550" id="mainsvg" class="svgs"></svg>
 
   <script>
+    // 手动输入数据，演示用
     const data = [{ name: 'Shao-Kui', value: 6 },
     { name: 'Wen-Yang', value: 6 }, { name: 'Cai Yun', value: 16 }, { name: 'Liang Yuan', value: 10 },
     { name: 'Yuan-Chen', value: 6 }, { name: 'Rui-Long', value: 10 }, { name: 'Dong Xin', value: 12 },
@@ -19,14 +20,14 @@
     { name: 'Yu Peng', value: 15 }, { name: 'Li Jian', value: 18 }]; //不允许修改的数组
 
     const svg = d3.select('#mainsvg'); //svg对象
-    const width = +svg.attr('width');
+    const width = +svg.attr('width');  //不要忘了数据类型转换
     const height = +svg.attr('height');
-    const margin = { top: 60, right: 30, bottom: 60, left: 150 }; //左边宽一点是为了容纳纵轴标度
+    const margin = { top: 60, right: 30, bottom: 60, left: 130 }; //左边宽一点是为了容纳纵轴标度
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
     const g = svg.append('g').attr('id', 'maingroup') //加入g节点，id为maingroup
-      .attr('transform', `translate(${margin.left}, ${margin.top})`); //平移
+      .attr('transform', `translate(${margin.left}, ${margin.top})`); //g区域绘图起点平移
 
     const xScale = d3.scaleLinear().
       domain([0, d3.max(data, datum => datum.value)]).
@@ -43,40 +44,42 @@
         .attr('height', yScale.bandwidth()) //宽度为y轴的条形宽
         .attr('y', yScale(datum.name)) //y坐标的映射
         .attr('fill', 'green')
-        .attr('opacity', '0.8')
+        .attr('opacity', '0.8') //设定透明度
     })
 
-    // 较简单的添加坐标轴和轴须、数值刻度 
+    // 较简单的坐标轴映射
     //const yAxis = d3.axisLeft(yScale); //由name比例尺生成左侧坐标轴，默认轴须向左延伸
     //const xAxis = d3.axisBottom(xScale); //由value比例尺生成底侧坐标轴，默认轴须向下延伸
 
-    //较复杂的轴须
-    const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth); //改变轴须的方向和长度，使轴须变为网格线
-    const xAxis = d3.axisBottom(xScale).tickSize(-innerHeight);
+    //较复杂的坐标轴映射
+    const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth); //改变轴须的方向和长度，使向左的轴须变为向右的网格线，直达g区域的右端
+    const xAxis = d3.axisBottom(xScale).tickSize(-innerHeight); //轴须向上，填满g区域
 
-    // 较简单的添加坐标轴代码
+    // 较简单坐标轴实现
     //g.append('g').call(yAxis); 
     //g.append('g').call(xAxis).attr('transform', `translate(0, ${innerHeight})`); 
 
-    //较复杂的坐标轴
-    const yAxisGroup = g.append('g').call(yAxis) //在g节点中新加一个g节点，一个坐标轴为一个group
+    //较复杂的坐标轴实现
+    const yAxisGroup = g.append('g').call(yAxis) //在g节点中新加一个g节点，因为坐标轴为若干坐标节点的一个group
+      //坐标轴本质上是一个映射/函数，即yAxis，call()调用这个方法，去修改g>g节点，从而将一个坐标轴实现
       .attr('id', 'yaxis')
-      .append('text').text('Name').attr('font-size', '3em')
+      .append('text').text('Name').attr('font-size', '2.5em') //这是y坐标轴的名称, tag为text
       .attr('transform', 'rotate(-90)') // y轴轴名称需要逆时针转90度 
-      .attr('x', -innerHeight / 2).attr('y', -120) //这里的x、y的方向已经逆时针转了90度
+      .attr('x', -innerHeight / 2).attr('y', -100) //这里的x、y的方向已经逆时针转了90度，因为DOM中父节点的属性会影响子节点
       .attr('fill', 'black') //若不设置颜色，轴标题将继承父节点（整个坐标轴g）的fill属性值: none
 
     const xAxisGroup = g.append('g').call(xAxis)
       .attr('id', 'xaxis')
-      .attr('transform', `translate(${0}, ${innerHeight})`) //新加的x轴要平移到下面
-      .append('text').text('Value').attr('font-size', '3em')
+      .attr('transform', `translate(${0}, ${innerHeight})`) //新加的x轴要平移到图下面
+      .append('text').text('Value').attr('font-size', '2.5em') //这是x坐标轴的名称, tag为text
       .attr('x', innerWidth / 2).attr('y', 50) //这个横纵坐标都是相对于x轴的起点
       .attr('fill', 'black');
 
-    d3.selectAll('.tick text').attr('font-size', '2em'); //轴须刻度统一字号
+    d3.selectAll('.tick text').attr('font-size', '1.5em'); //轴须刻度统一字号
 
-    g.append('text').text('Members of CSCG').attr('font-size', '3em')
-      .attr('x', innerWidth / 2 - 200).attr('y', -10)
+    g.append('text').text('Members of CSCG') //整个图的标题, tag同样为text
+      .attr('font-size', '3em')
+      .attr('x', innerWidth / 2 - 210).attr('y', -15)
   </script>
 </body>
 

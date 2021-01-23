@@ -35,9 +35,11 @@
       range([0, innerHeight])
       .padding(0.1);
 
-    // draw rectangles
-    g.selectAll('.dataRect').data(data).enter().append('rect')
-      .attr('class', 'dataRect')
+    // draw rectangles 这里的代码相对上个例子发生了变化
+    g.selectAll('.dataRect') //事实上，没有节点的class是dataRect，这里选定的是空集
+      .data(data).enter() //绑定数据，形成一系列占位符。.enter()返回父节点，即g节点
+      .append('rect') //在g节点后添加一系列rect节点（矩形）
+      .attr('class', 'dataRect') //将这些rect节点的class属性设置为dataRect
       .attr('width', d => xScale(d.value))
       .attr('height', yScale.bandwidth())
       .attr('y', d => yScale(d.name))

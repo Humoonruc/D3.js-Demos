@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Data Visualization!</title>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-  </head>
-  <body>
-    <svg width="960" height="500" id="mainsvg" class="svgs"></svg>
-    <script>
-      let mainsvg = d3.select('.svgs');
 
-      let maingroup = mainsvg
-      .append('g')
-      .attr('transform', `translate(${100}, ${100})`);
+<head>
+  <title>Data Visualization!</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
 
-      let circle = maingroup
-      .append('circle')
-      .attr('stroke', 'black')
-      .attr('r', '66')
-      .attr('fill', 'yellow');
-    </script>
-  </body>
+<body>
+  <svg width="960" height="500" id="mainsvg" class="svgs"></svg>
+  <script>
+    let mainsvg = d3.select('.svgs'); //获取svg标签，作为d3对象
+
+    let maingroup = mainsvg
+      .append('g') //增加g节点，d3中的一个常用父节点，表示元素的组（group）
+      .attr('transform', `translate(${100}, ${100})`); //起点向下方和右方平移100个像素
+
+    let circle = maingroup
+      .append('circle') //增加circle节点
+      .attr('stroke', 'black') //外边黑色
+      .attr('r', '66') // 半径66
+      .attr('fill', 'yellow'); //黄色填充
+  </script>
+</body>
+
 </html>
