@@ -20,65 +20,65 @@
     const margin = { top: 60, right: 60, bottom: 10, left: 60 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
-    const g = svg.append('g').attr('id', 'maingroup')
+    const mainGroup = svg.append('g').attr('id', 'maingroup')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    // convert dataPath to svgPath; 
-    // go to https://github.com/d3/d3-geo for more different projections; 
-    //const projection = d3.geoMercator();
-    //const projection = d3.geoOrthographic();
-    //const projection = d3.geoStereographic();
-    //const projection = d3.geoEquirectangular();
-    const projection = d3.geoNaturalEarth1();
-    //const projection = d3.geoTransverseMercator();
-    const pathGenerator = d3.geoPath().projection(projection);
 
-    // setting up the tip tool; 
-    const tip = d3.tip()
-      .attr('class', 'd3-tip').html(function (d) { return d.properties.name });
-    svg.call(tip);
+    //tip generator
+    //现在希望鼠标点击某个国家时，弹出其名称。但在哪里弹出呢？每个国家在SVG中对应一个path，设置相对于path的坐标很难。
+    // de-tip.js是一个辅助d3的库，其中的d3.tip()返回一个对象
+    // 该对象的.show(selection)和.hide(selection)方法作用于selection，可以自动在画布中selection附近合适的位置生成/删除文本框，由html(selection => text)定义文本框中的文本内容
+    let countryNameTextTip = d3.tip() //提示文本框生成器
+      .attr('class', 'd3-tip') //该文本框在DOM中class属性的值
+      .html(d => d.properties.name); //定义从selection到text的映射
+    svg.call(countryNameTextTip); //提示文本框的实现
 
-    let worldmeta;
-    let lastid = undefined;
 
-    d3.json('./data/countries-110m.json').then(
+    let mapDataGeoJson, mapProjection, mapGenerator;
+    let mapPaths;
+    let countryClicked = undefined; //起初不定义
+
+    // render map
+    d3.json('./data/countries-110m.json').then( //原始数据文件是TopoJson格式的
       function (data) {
-        // convert topo-json to geo-json; 
-        worldmeta = topojson.feature(data, data.objects.countries);
 
-        // this code is really important if you want to fit your geoPaths (map) in your SVG element; 
-        projection.fitSize([innerWidth, innerHeight], worldmeta);
+        // convert map data from topojson to geojson
+        mapDataGeoJson = topojson.feature(data, data.objects.countries);
 
-        // perform data-join; 
-        const paths = g.selectAll('path')
-          .data(worldmeta.features, d => d.properties.name)
+        // map generator
+        mapProjection = d3.geoNaturalEarth1() //投影的方式
+          .fitSize([innerWidth, innerHeight], mapDataGeoJson); //比例尺
+        mapGenerator = d3.geoPath().projection(mapProjection);
+
+        // render map
+        mapPaths = mainGroup.selectAll('path')
+          .data(mapDataGeoJson.features, d => d.properties.name)
+          //mapDataGeoJson是一个对象，mapDataGeoJson.features是一个数组，其中每个元素是一个对象，代表一个国家
+          //每个国家properties属性的值又是一个对象，有name属性，其值为该国国名
+          //所以针对原始数据的结构，用worldMap.features绑定图元，对每个元素用.properties.name才能取出其国名
           .enter().append('path')
-          .attr('d', pathGenerator)
-          .attr('stroke', 'black')
-          .attr('stroke-width', 1)
-          .on('mouseover', function (d) {
-            d3.select(this)
-              .attr("opacity", 0.5)
-              .attr("stroke", "white")
-              .attr("stroke-width", 6);
-          })
+          .attr('d', mapGenerator)
+          .style('stroke', 'black')
+          .style('stroke-width', 1)
           .on('mouseout', function (d) {
             d3.select(this)
               .attr("opacity", 1)
               .attr("stroke", "black")
               .attr("stroke-width", 1);
           })
-          .on('contextmenu', function (d) {
+          .on('click', function (d) {
             d3.event.preventDefault();
-            if (lastid !== d.properties.name) {
-              tip.show(d)
-              lastid = d.properties.name;
+            if (countryClicked !== d.properties.name) {
+              //显示一个与SVG平级的div.d3-tip标签，并根据事件对应的selection更新其text内容
+              countryNameTextTip.show(d)
+              countryClicked = d.properties.name;
             } else {
-              tip.hide(d)
+              countryNameTextTip.hide(d) //并未删除div.d3-tip标签，只是将其透明度设为0
             }
           })
       }
     );
+
 
   </script>
 </body>

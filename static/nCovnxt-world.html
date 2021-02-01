@@ -3,10 +3,10 @@
 <html>
   <head>
     <title>nCov-Province</title>
-    <link rel="stylesheet" href="/static/css/nCovnxt.css"> 
-    <script src="/static/js/d3.min.js"></script>
-    <script src="/static/js/library/moment.min.js"></script>
-    <script src="/static/js/color-strategies.js"></script>
+    <link rel="stylesheet" href="./css/nCovnxt.css"> 
+    <script src="./js/d3.min.js"></script>
+    <script src="./js/library/moment.min.js"></script>
+    <script src="./js/color-strategies.js"></script>
   </head>
   <body style="text-align: center">
     <svg width="1650" height="920" id="mainsvg" class="svgs" style="background-color: #333333;"></svg>
@@ -280,14 +280,14 @@
             .attr('y', (datum) => { return yScale(yValue(datum)) - 10 - rValue(datum) + offset_y[datum[keyHint]] ; });
         };
 
-        d3.csv('./static/data/2019worldpopulation.csv').then(data => {
+        d3.csv('./data/2019worldpopulation.csv').then(data => {
             data.forEach(datum => {
                 datum['2019年人口'] = +(datum['人口']);
             })
             metapop = data;
         });
 
-        d3.csv('./static/data/world.csv').then(function(data){
+        d3.csv('./data/world.csv').then(function(data){
             totals = data.filter(datum => {return datum[keyHint] === '总计'});
             data = data.filter(datum => {return datum[keyHint] !== '总计'});            
             data = data.filter(datum => {return datum[keyHint] !== '中国'});            
